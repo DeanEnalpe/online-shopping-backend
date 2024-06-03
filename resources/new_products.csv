@@ -1,0 +1,11 @@
+product_name,product_description,price,features,quantity,product_status
+Smartphone X,Latest model with advanced features,299.99,"Face ID, 128GB storage",25,HURRY UP TO PURCHASE
+Laptop Pro,High-performance laptop for professionals,1099.99,"16GB RAM, 512GB SSD",10,HURRY UP TO PURCHASE
+Tablet Z,Lightweight and powerful tablet,499.99,"10-inch display, 64GB storage",15,HURRY UP TO PURCHASE
+Smartwatch Y,Stylish smartwatch with health tracking,199.99,"Heart rate monitor, GPS",5,HURRY UP TO PURCHASE
+Camera V,High-resolution camera for perfect shots,799.99,"4K video recording, 20MP sensor",0,OUT OF STOCK
+Headphones W,Noise-cancelling headphones,149.99,"Bluetooth 5.0, 20-hour battery life",20,HURRY UP TO PURCHASE
+Monitor A,Ultra HD monitor with vibrant colors,399.99,"4K resolution, 1ms response time",12,HURRY UP TO PURCHASE
+Keyboard B,Mechanical keyboard with RGB lighting,89.99,"Cherry MX switches, customizable keys",18,HURRY UP TO PURCHASE
+Mouse C,Ergonomic mouse with programmable buttons,59.99,"16000 DPI, RGB lighting",0,OUT OF STOCK
+Speaker D,Wireless speaker with deep bass,199.99,"360-degree sound, waterproof",22,HURRY UP TO PURCHASE

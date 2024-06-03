@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    networks:
+      - fse_python
+    ports:
+      - "27017:27017"
+
+  fse_python:
+    image: fse-python
+    build: ./
+    ports:
+      - "5000:5000"
+    volumes:
+      - logs:/app/logs
+      - ./:/app
+      - products_data_volume:/app/resources/
+
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+    networks:
+      - fse_python
+
+volumes:
+  data:
+  logs:
+  products_data_volume:
+
+networks:
+  fse_python:

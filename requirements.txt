@@ -1,0 +1,12 @@
+bcrypt
+Flask[async]
+flask
+flask-cors
+gunicorn
+numpy
+pandas
+pymongo
+pydantic
+pydantic_core
+python-dotenv
+python-logstash
