@@ -9,6 +9,7 @@ client = MongoClient(os.getenv("MONGODB_URL"))
 db = client["mongodb"]
 collection = db["users"]
 
+
 def check_password(current_pw, pw_entered):
     return bcrypt.checkpw(pw_entered.encode('utf-8'), current_pw)
 

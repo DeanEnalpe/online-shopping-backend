@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv
 from model.Products import FSEProducts
 import pandas as pd
-
-
+import re
+from flask import jsonify
 load_dotenv()
 
 client = MongoClient(os.getenv("MONGODB_URL"))
@@ -13,7 +13,7 @@ collection = db["fseproducts"]
 
 
 def products_to_dictionary():
-    directory = '/app/resources/new_products.csv'
+    directory = 'C:/Users/2236561/PycharmProjects/online-shopping-backend-fse/resources/new_products.csv'
     if not os.path.exists(directory):
         raise FileNotFoundError(f"{directory} does not exist.")
     data = pd.read_csv(directory)
@@ -63,14 +63,6 @@ def find_product(product_name):
         return None
 
 
-def update_product(product_name, updated_product):
-    existing_product = collection.find_one({"product_name": product_name})
-    if existing_product:
-        collection.update_one({"product_name": product_name}, {"$set": updated_product.convert_to_json()})
-    else:
-        raise ValueError("Product not found")
-
-
 def validate_product_status(product_status, quantity):
     error_msg = ""
 
@@ -80,28 +72,36 @@ def validate_product_status(product_status, quantity):
 
     if len(error_msg) > 0:
         error_msg = "Error! " + error_msg
-        raise ValueError(error_msg)
-#
-#
-# def validate_quantity(quantity):
-#     pattern = re.compile("^0|[1-9]\d*$")
-#     error_msg = ""
-#
-#     if not pattern.match(quantity):
-#         error_msg = "Quantity should only contain numbers."
-#
-#     if len(error_msg) > 0:
-#         error_msg = "Error! " + error_msg
-#         raise ValueError(error_msg)
-#
-#
+        return {"message": error_msg}
+
+
+def validate_price(price):
+    pattern = r'^(?:0(?:\.[0-9]{1,2})?|1(?:\.00?)?)$'
+    error_msg = ""
+
+    if not re.match(pattern, price):
+        error_msg = "Price should only contain numbers and have exactly 2 decimal places."
+
+    if len(error_msg) > 0:
+        error_msg = "Error! " + error_msg
+        return {"message": error_msg}
+
+
+def validate_quantity(quantity):
+    pattern = r"^0|[1-9]\d*$"
+    error_msg = ""
+
+    if not re.match(pattern, quantity):
+        error_msg = "Quantity should only contain numbers."
+
+    if len(error_msg) > 0:
+        error_msg = "Error! " + error_msg
+        return {"message": error_msg}
+
 
 def validate_product(product):
-    # validate_product_name(product.product_name)
-    # validate_product_description(product.product_description)
-    # validate_price(product.price)
-    # validate_features(product.features)
-    # validate_quantity(product.quantity)
+    validate_price(product.price)
+    validate_quantity(product.quantity)
     validate_product_status(product.product_status, product.quantity)
 
 
@@ -114,3 +114,14 @@ def save_product(product):
         return None
     else:
         return product
+
+
+def update_product(product_name, updated_product):
+    validate_product(updated_product)
+    existing_product = collection.find_one({"product_name": product_name})
+    if existing_product:
+        collection.update_one({"product_name": product_name}, {"$set": updated_product.convert_to_json()})
+        # updated_product = collection.find_one({"product_name": updated_product.product_name}, {"_id": 0})
+        # return updated_product
+    else:
+        return {"message": "Product not found"}

@@ -18,7 +18,7 @@ class ProductRepositoryTest(unittest.TestCase):
             'price': '10.00',
             'features': 'Feature1, Feature2',
             'quantity': 10,
-            'product_status': 'AVAILABLE'
+            'product_status': 'HURRY UP TO PURCHASE'
         }])
         mock_read_csv.return_value = mock_data
 
@@ -38,7 +38,7 @@ class ProductRepositoryTest(unittest.TestCase):
             'price': '10.00',
             'features': 'Feature1, Feature2',
             'quantity': 10,
-            'product_status': 'AVAILABLE'
+            'product_status': 'HURRY UP TO PURCHASE'
         }]
 
         result = find_all_products()
@@ -76,7 +76,7 @@ class ProductRepositoryTest(unittest.TestCase):
             'price': '10.00',
             'features': 'Feature1, Feature2',
             'quantity': 10,
-            'product_status': 'AVAILABLE'
+            'product_status': 'HURRY UP TO PURCHASE'
         }
 
         product = FSEProducts(
@@ -85,7 +85,7 @@ class ProductRepositoryTest(unittest.TestCase):
             price='10.00',
             features='Feature1, Feature2',
             quantity=10,
-            product_status='AVAILABLE'
+            product_status='HURRY UP TO PURCHASE'
         )
 
         result = save_product(product)

@@ -79,15 +79,9 @@ def validate_email(email):
 
 
 def validate_password(password):
-    # pattern = re.compile("^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!#$%&?_]).*$")
     error_msg = ""
     if len(password) > 20 or len(password) < 8:
         error_msg = "Password should have at least 8 characters with a maximum of 20 characters. "
-    #
-    # if not pattern.match(password):
-    #     print("Password validation failed:", password)
-    #     error_msg = error_msg + ("Password should contain at least 1 uppercase letter, 1 digit, "
-    #                              "and 1 of the special characters: !#$%&?_")
 
     if len(error_msg) > 0:
         error_msg = "Error! " + error_msg
@@ -100,16 +94,12 @@ def validate_confirm_password(password, confirm_password):
 
 
 def validate_contact_number(contact_number):
-    # pattern = r"^09\d+$"
     error_msg = ""
     if len(contact_number) > 11:
         error_msg = "Mobile number exceeds 11 characters"
 
     if len(contact_number) < 11:
         error_msg = "Contact number is less than 11 characters"
-
-    # if not re.match(pattern, contact_number):
-    #     error_msg = error_msg + "Contact number should be format like this: 09123456789"
 
     if len(error_msg) > 0:
         error_msg = "Error! "
@@ -129,7 +119,7 @@ def validate_account(users):
 def save_account(users):
     validate_account(users)
     hashed_password = bcrypt.hashpw(users.password.encode('utf-8'), bcrypt.gensalt())
-    users.password = hashed_password.decode('utf-8')  # Decode the hashed password
+    users.password = hashed_password.decode('utf-8')
     new_acc = collection.insert_one(users.convert_to_json())
     created_acc = collection.find_one({"_id" : new_acc.inserted_id})
 

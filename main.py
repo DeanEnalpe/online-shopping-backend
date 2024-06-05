@@ -34,6 +34,16 @@ logger = logging.getLogger('python-logstash-logger')
 logger.setLevel(logging.INFO)
 logger.addHandler(logstash.TCPLogstashHandler(host, port, version=1))
 
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'login_id' not in session:
+            abort(402)
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -43,12 +53,12 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def user_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        is_admin = session.get('is_admin')
-        if is_admin:
-            abort(403)
+        if 'login_id' not in session or session.get('is_admin'):
+            abort(401)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -101,6 +111,7 @@ async def login():
 
 
 @app.route('/shopping/products', methods=['GET'])
+@login_required
 @user_required
 def get_all_products():
     login_id = session.get('login_id')
@@ -109,6 +120,7 @@ def get_all_products():
 
 
 @app.route('/shopping/products/search', methods=['POST'])
+@login_required
 @user_required
 def get_specific_product():
     login_id = session.get('login_id')
@@ -125,6 +137,7 @@ def get_specific_product():
 
 
 @app.route('/shopping/admin/products', methods=['POST'])
+@login_required
 @admin_required
 def add_product():
     product_req= product_request_model.ProductsRequestModel(**request.json)
@@ -150,8 +163,10 @@ def add_product():
 
 
 @app.route('/shopping/admin/products/<product_name>', methods=['PUT'])
+@login_required
 @admin_required
 def update_product(product_name):
+    product_name = product_name
     product_req = product_request_model.ProductsRequestModel(**request.json)
     product_ = product_model.FSEProducts(
                         product_req.product_name,
@@ -167,7 +182,7 @@ def update_product(product_name):
         logger.info('Edit products attempted')
         return {'message': 'Product successfully updated!'}
     except ValueError as e:
-        logger.info('Edit products failed')
-        return {"message": "Failed to update product"}, 400
+        logger.error(e)
+        return {"message": e}, 400
     except Exception as e:
-        return {"message": "Internal Server Error"}, 500
+        return {"message": "Internal Server Error " + e.__str__()}, 500
