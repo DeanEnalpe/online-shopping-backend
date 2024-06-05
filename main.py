@@ -13,6 +13,7 @@ import model.Products as product_model
 import model.ProductsRequestModel as product_request_model
 import logging
 import logstash
+import model.Password as password_model
 
 
 load_dotenv()
@@ -154,12 +155,12 @@ def add_product():
         print("Test")
         products_repo.save_product(product_)
         logger.info('Adding products attempted')
-        return {'message': 'Product successfully added!'}
+        return jsonify({'message': 'Product successfully added!'})
     except ValueError as e:
         logger.error('Failed to add products')
-        return {"message": "Failed to add product"}, 400
+        return jsonify({"message": "Failed to add product"}), 400
     except Exception as e:
-        return {"message": "Internal Server Error"}, 500
+        return jsonify({"message": "Internal Server Error"}), 500
 
 
 @app.route('/shopping/admin/products/<product_name>', methods=['PUT'])
@@ -183,6 +184,28 @@ def update_product(product_name):
         return {'message': 'Product successfully updated!'}
     except ValueError as e:
         logger.error(e)
-        return {"message": e}, 400
+        return {"message": 'Failed to update product' + e.__str__()}, 400
     except Exception as e:
         return {"message": "Internal Server Error " + e.__str__()}, 500
+
+
+# @app.route('/shopping/forgot-password', methods=['POST'])
+# def forgot_password():
+#     data = request.json
+#     password_reset_request = password_model.Password(
+#         email=data['email'],
+#         login_id=data['login_id'],
+#         new_password=data['new_password'],
+#         confirm_password=data['confirm_password']
+#     )
+#
+#     try:
+#         result, status = loginProcess.reset_password(
+#             password_reset_request.email,
+#             password_reset_request.login_id,
+#             password_reset_request.new_password,
+#             password_reset_request.confirm_password
+#         )
+#         return jsonify(result), status
+#     except Exception as e:
+#         return jsonify({"message": "Failed to reset password", "error": str(e)}), 500

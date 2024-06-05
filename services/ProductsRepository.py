@@ -13,7 +13,7 @@ collection = db["fseproducts"]
 
 
 def products_to_dictionary():
-    directory = 'C:/Users/2236561/PycharmProjects/online-shopping-backend-fse/resources/new_products.csv'
+    directory = '/app/resources/new_products.csv'
     if not os.path.exists(directory):
         raise FileNotFoundError(f"{directory} does not exist.")
     data = pd.read_csv(directory)
@@ -23,11 +23,7 @@ def products_to_dictionary():
 
 
 def find_all_products():
-    if collection.count_documents({}) == 0:
-        products_to_dictionary()
-
     products = list(collection.find({}, {"_id": 0}))
-
     products_objects = []
     for product in products:
         if 'quantity' in product:
@@ -45,22 +41,23 @@ def find_all_products():
 
 
 def find_product(product_name):
-    product = collection.find_one({"product_name": product_name}, {"_id": 0})
-    if product:
-        if product['product_status'] == 'HURRY UP TO PURCHASE':
-            return product
-        if product['product_status'] == 'OUT OF STOCK':
+    fetch_product = collection.find_one({"product_name": product_name}, {"_id": 0})
+    if fetch_product:
+        if fetch_product['product_status'] == 'HURRY UP TO PURCHASE':
+            return fetch_product
+        if fetch_product['product_status'] == 'OUT OF STOCK':
             raise ValueError('OUT OF STOCK')
     else:
-        if collection.count_documents({}) == 0:
-            products_to_dictionary()
+        if collection.find_one({"product_name": product_name}) == 0:
+            return None
+        else:
             product = collection.find_one({"product_name": product_name}, {"_id": 0})
             if product:
                 if product['product_status'] == 'HURRY UP TO PURCHASE':
                     return product
                 if product['product_status'] == 'OUT OF STOCK':
                     raise ValueError('OUT OF STOCK')
-        return None
+    return None
 
 
 def validate_product_status(product_status, quantity):
@@ -121,7 +118,7 @@ def update_product(product_name, updated_product):
     existing_product = collection.find_one({"product_name": product_name})
     if existing_product:
         collection.update_one({"product_name": product_name}, {"$set": updated_product.convert_to_json()})
-        # updated_product = collection.find_one({"product_name": updated_product.product_name}, {"_id": 0})
-        # return updated_product
+        updated_product = collection.find_one({"product_name": updated_product.product_name}, {"_id": 0})
+        return updated_product
     else:
         return {"message": "Product not found"}
